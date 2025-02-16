@@ -7,7 +7,6 @@ const { banLogs, linkLogs } = require('./devLogs')
 const { sendBanMessage } = require('../utils/sendDmMessages')
 async function ban_member(message, user_cache) {
     try{
-        const channel_name = message.channel.name
         const member = message.guild.members.cache.get(message.author.id)
         const channel_name = message.channel.name
         const user = member.user

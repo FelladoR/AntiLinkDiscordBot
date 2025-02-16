@@ -1,7 +1,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const Logger = require('./utils/logs');
 const { Client, Collection, Events, GatewayIntentBits, REST, Routes } = require('discord.js');
 require('dotenv').config();
+lg = new Logger('Bot');
 const mongoose = require('mongoose');
 const { load_translations, getTransation } = require('./utils/helper')
 const mongoURI = process.env.MONGODB_TOKEN;
@@ -13,9 +15,11 @@ async function mongodbConnect() {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	})
-		.then(() => console.log('Connected to MongoDB'))
-		.catch((err) => console.error('MongoDB connection error:', err));
+		.then(() => lg.info('Connected to MongoDB'))
+		.catch((err) => lg.error('MongoDB connection error:', err));
 }
+
+
 
 
 // Токен бота та ID
@@ -39,7 +43,7 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args));
 	}
 }
-
+lg.info("test");
 // Авторизація бота
 async function start_bot(client, token, mongoURI){
 	try{
