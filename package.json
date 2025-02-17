@@ -1,11 +1,14 @@
 {
-  "name": "discordjsbot",
-  "version": "1.0.0",
+  "name": "anilink",
+  "version": "0.0.1",
   "main": "bot.js",
   "scripts": {
+    "start": "node bot.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "RastGame",
   "license": "ISC",
   "description": "",
   "dependencies": {
