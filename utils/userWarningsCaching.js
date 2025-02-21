@@ -1,6 +1,8 @@
 const User = require('../Schemas/userSchema');
 const UserWarnsCache = new Map();
 const CACHE_TTL = 10 * 60 * 500; // 5 хв збереження кешу
+const Logger = require('./logs');
+lg = new Logger('Bot');
 
 async function warning_cache_check(message) {
 	try {
@@ -18,7 +20,7 @@ async function warning_cache_check(message) {
 		return warns;
 	}
 	catch (error) {
-		console.log('warning_cache_check: ' + error);
+		lg.error('warning_cache_check: ' + error);
 	}
 
 }
@@ -32,7 +34,7 @@ async function add_warns_to_cache(user_id) {
 
 	}
 	catch (error) {
-		console.log('add_warns_to_cache: ' + error);
+		lg.error('add_warns_to_cache: ' + error);
 	}
 
 }
@@ -41,25 +43,24 @@ setInterval(() => {
 	const now = Date.now();
 	for (const [user_id, cacheEntry] of UserWarnsCache) {
 		if ((now - cacheEntry.timestamp) >= CACHE_TTL) {
-			delete_cache(user_Id);
-			console.log(`Кеш видалено для користувача ${user_id}`);
+			delete_cache(user_id);
 		}
 	}
 }, CACHE_TTL);
 
-function delete_cache(user_Id) {
+function delete_cache(user_id) {
 	try {
-		console.log('Айдішник: ' + user_Id);
-		const cacheEntry = UserWarnsCache.get(user_Id);
+
+		const cacheEntry = UserWarnsCache.get(user_id);
 		if (cacheEntry && (Date.now() - cacheEntry.timestamp) < CACHE_TTL) {
-			UserWarnsCache.delete(user_Id);
-			console.log('Кеш видалено!');
+			UserWarnsCache.delete(user_id);
+
 		}
 
 
 	}
 	catch (error) {
-		console.log(error);
+		lg.error(error);
 	}
 }
 module.exports = {

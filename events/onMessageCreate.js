@@ -6,6 +6,8 @@ const { canBotBanMember } = require('../utils/sendDmMessages');
 
 const { warning_cache_check, add_warns_to_cache } = require('../utils/userWarningsCaching');
 const { ban_member, delete_message_and_notice, check_blocking, check_whitelist_and_owner } = require('../utils/memberBan');
+const Logger = require('../utils/logs');
+lg = new Logger('Bot');
 
 module.exports = {
 	name: Events.MessageCreate,
@@ -23,7 +25,7 @@ module.exports = {
 
 			const regex = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|club)|discord(app)?\.com\/invite)\/\S+/i;
 			const isMessageLink = regex.test(message.content);
-			// console.log(isMessageLink)
+        
 			if (isMessageLink === true) {
 
 				if (isRole === false && is_blocking_enabled === true && !message.author.bot && message.author.id != message.guild.ownerId) {
@@ -71,7 +73,7 @@ module.exports = {
 
 				}
 				else if (isMessageLink === false) {
-					console.log('Не є посиланням');
+
 					return;
 				}
 
@@ -80,7 +82,7 @@ module.exports = {
 			if (guildData && guildData.blocking_enabled === true) {
 				const member = message.member;
 				const user_cache = await warning_cache_check(message);
-				console.log(`Отриманий кеш юзера ${message.author.id}: ` + user_cache);
+
 				if (user_cache) {
 					if (user_cache >= 3 && is_blocking_enabled === true && isRole === false) {
 
@@ -99,7 +101,7 @@ module.exports = {
 
 		}
 		catch (error) {
-			console.log(error);
+			lg.error(error);
 		}
 
 	},

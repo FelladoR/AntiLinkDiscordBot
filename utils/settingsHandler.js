@@ -1,20 +1,20 @@
 const { getTranslation } = require('./helper');
 const Guild = require('../Schemas/guildSchema');
-
+const Logger = require('./logs');
+lg = new Logger('Bot');
 
 async function get_webhook(guildData, interaction) {
     try{
         if(guildData.logchannel) {
             const webhookId = guildData.logchannel.split('/')[5]; // Отримуємо ID вебхука 
             webhook = await interaction.client.fetchWebhook(webhookId); // Отримуємо вебхук
-            console.log(webhook)
             return webhook
         } else {
             return null
         }
 
     }catch(error) {
-        console.log('Помилка при отриманні webhook: '+ error)
+        lg.error('Помилка при отриманні webhook: '+ error)
     }
 
 }
@@ -28,7 +28,7 @@ async function get_emojis_for_message(support_server) {
         }
         return emoji_pack
     }catch(error) {
-        console.log('Не вдалось отримати емодзі get_emoji_for_message: '+ error)
+        lg.error('Не вдалось отримати емодзі get_emoji_for_message: '+ error)
         
     }
 }
@@ -37,28 +37,25 @@ async function format_whitelist(interaction) {
     try {
         const GuildData = await Guild.findOne({ _id: interaction.guild.id });
         if (!GuildData || !GuildData.whitelist || GuildData.whitelist.length === 0) {
-            console.log('Бачу, що немає ролей');
             return []; // Повертаємо порожній масив, якщо немає ролей
         }
 
         const rolesId = GuildData.whitelist;
         let role_mentions = [];
-        console.log(`Айді ролей:`+ rolesId);
 
         rolesId.forEach(roleId => {
             const role = interaction.guild.roles.cache.get(roleId);
             if (role) {
-                console.log('Роль знайдено: ' + role.name);
                 // Додаємо згадку про роль до списку
                 role_mentions.push(role.toString()); // Згадка про роль
             } else {
-                console.log('Роль з ID ' + roleId + ' не знайдена!');
+
             }
         });
 
         return role_mentions; // Повертаємо масив згадок про ролі
     } catch (error) {
-        console.error('Помилка у форматуванні білого списку:', error);
+        ls.error('Помилка у форматуванні білого списку:', error);
         return []; // Повертаємо порожній масив у випадку помилки
     }
 
@@ -68,13 +65,12 @@ async function format_whitelist(interaction) {
 async function settingsHandler(interaction) {
     const support_server = await interaction.client.guilds.cache.get(process.env.SUPPORT_SERVER_ID);
     if (!support_server) {
-        console.log('Не вдалось знайти сервер підтримки');
+        lg.warn('Не вдалось знайти сервер підтримки');
         return;
     }
 
     let guildData = await Guild.findOne({ _id: interaction.guild.id });
     if (!guildData) {
-        console.log('Не знайдено налаштувань');
         guildData = new Guild({ _id: interaction.guild.id });
     }
 
@@ -115,7 +111,7 @@ async function get_emojis_for_message(support_server) {
             error_emoji: await support_server.emojis.cache.get('1338880092633567303')
         };
     } catch (error) {
-        console.log('Не вдалось отримати емодзі get_emoji_for_message: ' + error);
+        lg.error('Не вдалось отримати емодзі get_emoji_for_message: ' + error);
     }
 }
 
@@ -123,27 +119,25 @@ async function format_whitelist(interaction) {
     try {
         const GuildData = await Guild.findOne({ _id: interaction.guild.id });
         if (!GuildData || !GuildData.whitelist || GuildData.whitelist.length === 0) {
-            console.log('Бачу, що немає ролей');
             return []; // Повертаємо порожній масив, якщо немає ролей
         }
 
         const rolesId = GuildData.whitelist;
         let role_mentions = [];
-        console.log(`Айді ролей: ${rolesId}`);
+
 
         rolesId.forEach(roleId => {
             const role = interaction.guild.roles.cache.get(roleId);
             if (role) {
-                console.log('Роль знайдено: ' + role.name);
                 role_mentions.push(role.toString()); // Згадка про роль
             } else {
-                console.log('Роль з ID ' + roleId + ' не знайдена!');
+
             }
         });
 
         return role_mentions; // Повертаємо масив згадок про ролі
     } catch (error) {
-        console.error('Помилка у форматуванні білого списку:', error);
+        lg.error('Помилка у форматуванні білого списку:', error);
         return []; // Повертаємо порожній масив у випадку помилки
     }
 }

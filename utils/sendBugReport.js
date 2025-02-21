@@ -1,6 +1,8 @@
 const { EmbedBuilder, WebhookClient, MessageFlags } = require('discord.js');
 const { colors, getTranslation } = require('./helper');
 const { settingsHandler } = require('./settingsHandler');
+const Logger = require('./logs');
+lg = new Logger('Bot');
 
 async function send_webhook(interaction, bug_text, reproduce_text) {
 	try {
@@ -28,7 +30,7 @@ async function send_webhook(interaction, bug_text, reproduce_text) {
 		await interaction.reply({ embeds: [SuccessEmbed], flags: MessageFlags.Ephemeral });
 	}
 	catch (error) {
-		console.log('send_webhook error: ' + error);
+		lg.error('send_webhook error: ' + error);
 	}
 }
 

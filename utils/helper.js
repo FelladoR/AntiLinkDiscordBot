@@ -2,11 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const Guild = require('../Schemas/guildSchema');
-
+const Logger = require('./logs');
+lg = new Logger('Bot');
 const cachedTranslations = {};
 const cachedGuildLanguages = {};
 
-const CACHE_TTL = 10 * 60 * 1000; // 1 година
+const CACHE_TTL = 10 * 60 * 1000; // 10 mins
 const cachedTimestamps = {};
 
 function load_translations(language) {
@@ -25,11 +26,11 @@ function load_translations(language) {
 			return translations;
 		}
 		catch (error) {
-			console.error(`Помилка читання файлу перекладів для мови ${language}:`, error);
+			lg.error(`Помилка читання файлу перекладів для мови ${language}:`, error);
 		}
 	}
 	else {
-		console.warn(`Файл перекладів для мови ${language} не знайдено.`);
+		lg.warn(`Файл перекладів для мови ${language} не знайдено.`);
 	}
 
 	return null;
@@ -45,7 +46,7 @@ async function get_guild_language(guildId) {
 		let guildData = await Guild.findOne({ _id: guildId });
 
 		if (!guildData || !guildData.language) {
-			console.log('Не знайдено мову для гільдії. Встановлюємо за замовчуванням.');
+			lg.info('Не знайдено мову для гільдії. Встановлюємо за замовчуванням.');
 			guildData = new Guild({ _id: guildId });
 			await guildData.save();
 		}
@@ -55,7 +56,7 @@ async function get_guild_language(guildId) {
 		return language;
 	}
 	catch (error) {
-		console.error(`Помилка отримання мови для гільдії ${guildId}:`, error);
+		lg.error(`Помилка отримання мови для гільдії ${guildId}:`, error);
 		return 'en'; // Повертаємо стандартну мову в разі помилки
 	}
 }

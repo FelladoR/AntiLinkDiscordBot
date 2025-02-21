@@ -6,6 +6,9 @@ const { clear_guild_language_cache, getTranslation, colors } = require('../../ut
 const { get } = require('mongoose');
 const { check_owner_permission } = require('../../utils/settingsHandler');
 const User = require('../../Schemas/userSchema');
+
+const Logger = require('../../utils/logs')
+ls = new Logger('Bot')
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('setup')

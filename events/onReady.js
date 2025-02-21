@@ -7,6 +7,8 @@ require('dotenv').config();
 const token = process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
 const guildId = process.env.GUILD_ID;
+const Logger = require('../utils/logs');
+lg = new Logger('Bot');
 
 module.exports = {
 	name: Events.ClientReady,
@@ -29,10 +31,10 @@ module.exports = {
 					const command = require(fullPath);
 					if ('data' in command && 'execute' in command) {
 						client.commands.set(command.data.name, command);
-						console.log(`Команда ${command.data.name} завантажена з файлу ${fullPath}`);
+						lg.info(`Команда ${command.data.name} завантажена з файлу ${fullPath}`);
 					}
 					else {
-						console.log(`[WARNING] The command at ${fullPath} is missing a required "data" or "execute" property.`);
+						lg.warn(`[WARNING] The command at ${fullPath} is missing a required "data" or "execute" property.`);
 					}
 				}
 			}
@@ -40,24 +42,24 @@ module.exports = {
 
 		await loadCommands(foldersPath);
 
-		console.log('Усі команди успішно завантажені!');
+		lg.success('Усі команди успішно завантажені!');
 
 		const commands = client.commands.map(command => command.data.toJSON());
 
 		const rest = new REST({ version: '10' }).setToken(token);
 
 		try {
-			console.log('Реєстрація команд...');
+			lg.info('Реєстрація команд...');
 
 			await rest.put(
 				Routes.applicationCommands(clientId),
 				{ body: commands },
 			);
-			console.log('Локальні команди успішно зареєстровані!');
+			lg.success('Локальні команди успішно зареєстровані!');
 
 		}
 		catch (error) {
-			console.error('Помилка при реєстрації команд:', error);
+			lg.error('Помилка при реєстрації команд:', error);
 		}
 	},
 };

@@ -5,6 +5,9 @@ const { getTranslation } = require('./helper');
 const { guild_link_delete_log, guild_ban_log } = require('./guildLogs');
 const { banLogs, linkLogs } = require('./devLogs');
 const { sendBanMessage } = require('../utils/sendDmMessages');
+const Logger = require('./logs');
+lg = new Logger('Bot');
+
 async function ban_member(message, user_cache) {
 	try {
 		const member = message.guild.members.cache.get(message.author.id);
@@ -23,13 +26,13 @@ async function ban_member(message, user_cache) {
 
 	}
 	catch (error) {
-		console.log(error);
+		lg.error(error);
 		try {
 			const member = message.guild.members.cache.get(message.author.id);
 			await member.ban();
 		}
 		catch (error) {
-			console.log(error);
+			lg.error(error);
 		}
 	}
 }
@@ -49,7 +52,7 @@ async function delete_message_and_notice(message, userData, channel_name) {
 		await message.delete().then(message => {
 			message.channel.send({ content: `<@${message.author.id}>`, embeds: [ExampleEmbed] }).then(message => {
 				setTimeout(() => {
-					message.delete().catch(console.error);
+					message.delete().catch(lg.error);
 				}, 10000);
 			});
 			guild_link_delete_log(message, user_id, channel_name);
@@ -59,12 +62,12 @@ async function delete_message_and_notice(message, userData, channel_name) {
 
 		}
 		catch (error) {
-			console.warn('Помилка при надсиланні linkLogs: ' + error);
+			lg.error('Помилка при надсиланні linkLogs: ' + error);
 		}
 
 	}
 	catch (error) {
-		console.warn('Виникла помилка в функції delete_message_and_notice:' + error);
+		lg.error('Виникла помилка в функції delete_message_and_notice:' + error);
 	}
 }
 
@@ -81,7 +84,7 @@ async function check_blocking(message) {
 		}
 	}
 	catch (error) {
-		console.log('check_block error: ' + error);
+		lg.error('check_block error: ' + error);
 	}
 }
 
@@ -106,17 +109,16 @@ async function check_whitelist_and_owner(message) {
 		const hasWhitelistedRole = memberRoles.some(role => whitelist_data.includes(role.id));
 
 		if (hasWhitelistedRole) {
-			console.log('Значення true');
+
 			return true;
 		}
 		else {
-			console.log('Значення false');
 			return false;
 		}
 
 	}
 	catch (error) {
-		console.error('Сталася помилка:', error);
+		lg.error('Сталася помилка:', error);
 	}
 }
 module.exports = {

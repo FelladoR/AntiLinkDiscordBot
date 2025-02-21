@@ -3,6 +3,9 @@ require('dotenv').config();
 const { send_webhook } = require('../utils/sendBugReport');
 const { colors } = require('../utils/helper');
 const { settingsHandler } = require('../utils/settingsHandler');
+const Logger = require('../utils/logs');
+lg = new Logger('Bot');
+
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
@@ -13,7 +16,7 @@ module.exports = {
 				return;
 			}
 			catch (error) {
-				console.log(error);
+				lg.log(error);
 			}
 		}
 		const { emoji_pack } = await settingsHandler(interaction);
@@ -26,7 +29,7 @@ module.exports = {
 				}
 			}
 			catch (error) {
-				console.log(error);
+				lg.log(error);
 			}
 
 		}
@@ -35,7 +38,7 @@ module.exports = {
 
 			const command = interaction.client.commands.get(interaction.commandName);
 			if (!command) {
-				console.error(`No command matching ${interaction.commandName} was found.`);
+				lg.error(`No command matching ${interaction.commandName} was found.`);
 				return;
 			}
 
@@ -46,7 +49,7 @@ module.exports = {
 
 
 			if (!command) {
-				console.error(`No command matching ${interaction.commandName} was found.`);
+				lg.error(`No command matching ${interaction.commandName} was found.`);
 				return;
 			}
 
@@ -82,7 +85,7 @@ module.exports = {
 
 			}
 			catch (error) {
-				console.error(error);
+				lg.error(error);
 				if (interaction.replied || interaction.deferred) {
 					await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
 				}

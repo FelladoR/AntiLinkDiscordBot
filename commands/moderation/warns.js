@@ -2,6 +2,9 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 const Warning = require('../../Schemas/userSchema');
 const { getTranslation } = require('../../utils/helper');
+const Logger = require('../../utils/logs');
+lg = new Logger('Bot');
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('warns')
@@ -14,7 +17,6 @@ module.exports = {
 
 	async execute(interaction) {
 		const userId = interaction.options.getString('user_id');
-		console.log(`Айді, який перевіряю: ${userId}`);
 
 		// Перевірка, чи є це число
 		if (isNaN(userId)) {
@@ -37,7 +39,6 @@ module.exports = {
 
 		try {
 
-			console.log(`Запит в базу:id: ${userIdNumber}`);
 			const userData = await Warning.findOne({ _id: userIdNumber });
 
 			const noWarnsEmbed = new EmbedBuilder()
@@ -63,7 +64,6 @@ module.exports = {
 					}),
 				)
 			).join('\n');
-			console.log(await getTranslation(interaction.guild.id, 'warns'));
 
 			const embed = new EmbedBuilder()
 				.setColor('#e74d3c')
@@ -81,7 +81,7 @@ module.exports = {
 
 		}
 		catch (error) {
-			console.error('Помилка при отриманні попереджень:', error);
+			lg.error('Помилка при отриманні попереджень:', error);
 			return interaction.reply({
 				content: await getTranslation(interaction.guild.id, 'main_error_message'),
 				ephemeral: true,

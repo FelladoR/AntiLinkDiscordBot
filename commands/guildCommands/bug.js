@@ -1,5 +1,8 @@
 const { EmbedBuilder, SlashCommandBuilder, WebhookClient, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { getTranslation } = require('../../utils/helper');
+const Logger = require('../../utils/logs');
+lg = new Logger('Bot');
+
 require('dotenv');
 module.exports = {
 	cooldown: 120,
@@ -37,7 +40,7 @@ module.exports = {
 
 		}
 		catch (error) {
-			console.log('bug error: ' + error);
+			lg.error('bug error: ' + error);
 		}
 	},
 

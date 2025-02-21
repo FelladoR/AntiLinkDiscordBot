@@ -3,6 +3,8 @@ const { EmbedBuilder, MessageFlags } = require('discord.js');
 const Guild = require('../../Schemas/guildSchema');
 const { getTranslation } = require('../../utils/helper');
 const { settingsHandler } = require('../../utils/settingsHandler');
+const Logger = require('../../utils/logs');
+lg = new Logger('Bot');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -31,12 +33,12 @@ module.exports = {
 			}
 			else {
 				await interaction.reply({ content: await getTranslation(interaction.guild.id, 'no_perms'), flags: MessageFlags.Ephemeral });
-				console.log('Немає прав власника серверу, неможна використовувати команду');
+
 				return;
 			}
 		}
 		catch (error) {
-			console.log('Помилка settings.js: ' + error);
+			lg.error('Помилка settings.js: ' + error);
 		}
 	},
 };

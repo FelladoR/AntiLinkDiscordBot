@@ -7,13 +7,12 @@ lg = new Logger('Bot');
 const mongoose = require('mongoose');
 const { load_translations, getTransation } = require('./utils/helper');
 const mongoURI = process.env.MONGODB_TOKEN;
+
 async function mongodbConnect() {
 
-	console.log('URI' + mongoURI);
 	// Підключення до MongoDB
 	mongoose.connect(mongoURI, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
+
 	})
 		.then(() => lg.info('Connected to MongoDB'))
 		.catch((err) => lg.error('MongoDB connection error:', err));
@@ -32,7 +31,7 @@ const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
-	console.log('Events викликається');
+	lg.info(`Івент ${file} завантажено!`);
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
 	if (event.once) {
@@ -42,7 +41,7 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args));
 	}
 }
-lg.info('test');
+
 // Авторизація бота
 async function start_bot(client, token, mongoURI) {
 	try {

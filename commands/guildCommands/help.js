@@ -3,6 +3,8 @@ const { EmbedBuilder, MessageFlags } = require('discord.js');
 const { getTranslation } = require('../../utils/helper');
 const { get_emojis_for_message } = require('../../utils/settingsHandler');
 
+const Logger = require('../../utils/logs');
+lg = new Logger('Bot');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('help')
@@ -26,7 +28,7 @@ module.exports = {
 
 		}
 		catch (error) {
-			console.log('Помилка settings.js: ' + error);
+			lg.error('Помилка settings.js: ' + error);
 		}
 	},
 };

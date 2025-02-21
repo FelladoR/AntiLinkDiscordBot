@@ -1,16 +1,18 @@
 const { discord, EmbedBuilder } = require('discord.js');
 const { getTranslation } = require('./helper');
+const Logger = require('./logs');
+lg = new Logger('Bot');
+
 async function sendBanMessage(user, guild) {
 	try {
 		if (!user.dmChannel) {
 			await user.createDM();
 		}
 		if (!user) {
-			console.log('Не вдалось отримати користувача');
+			lg.error('Не вдалось отримати користувача');
 
 		}
 		const guild_name = guild.name;
-		console.log('Передано значення:' + user);
 		const BanMessage = new EmbedBuilder()
 			.setColor(0x427bff)
 			.setTitle(await getTranslation(guild.id, 'dm_title'))
@@ -23,9 +25,9 @@ async function sendBanMessage(user, guild) {
 
 	}
 	catch (error) {
-		console.log(error);
+		lg.error(error);
 		if (error.code === 50007) {
-			console.log('Користувач не дозволив отримувати приватні повідомлення від цього бота.');
+			lg.debug('Користувач не дозволив отримувати приватні повідомлення від цього бота.');
 		}
 
 	}
