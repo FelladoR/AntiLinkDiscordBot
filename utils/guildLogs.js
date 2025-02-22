@@ -6,7 +6,7 @@ const lg = new Logger('Bot');
 
 export async function guild_link_delete_log(message, user_id, channel_name) {
     try{
-        guildData = await Guild.findOne({ _id: message.guild.id });
+        const guildData = await Guild.findOne({ _id: message.guild.id });
         guild_logchannel = guildData.logchannel;
         if (guild_logchannel) {
             const webhook = new WebhookClient({ url: guild_logchannel });
@@ -30,7 +30,7 @@ export async function guild_link_delete_log(message, user_id, channel_name) {
 
 export async function guild_ban_log(message, user_id, channel_name) {
     try{
-        guildData = await Guild.findOne({ _id: message.guild.id });
+        const guildData = await Guild.findOne({ _id: message.guild.id });
         guild_logchannel = guildData.logchannel;
         if (guild_logchannel) {
             const webhook = new WebhookClient({ url: guild_logchannel });

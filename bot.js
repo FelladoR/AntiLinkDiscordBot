@@ -16,7 +16,11 @@ const mongoURI = process.env.MONGODB_TOKEN;
 const lg = new Logger('Bot');
 async function mongodbConnect() {
 
-	mongoose.connect(mongoURI)
+	mongoose.connect(mongoURI), {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            tls: true
+    }
 		.then(() => lg.info('Connected to MongoDB'))
 		.catch((err) => lg.error('MongoDB connection error:', err));
 }
