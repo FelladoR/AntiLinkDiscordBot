@@ -14,16 +14,20 @@ const __dirname = dirname(__filename);
 
 const mongoURI = process.env.MONGODB_TOKEN;
 const lg = new Logger('Bot');
-async function mongodbConnect() {
 
-	mongoose.connect(mongoURI), {
+async function mongodbConnect() {
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            tls: true
+        });
+        console.log('MongoDB підключено');
+    } catch (error) {
+        console.error('Помилка підключення до MongoDB:', error);
+        process.exit(1);
     }
-		.then(() => lg.info('Connected to MongoDB'))
-		.catch((err) => lg.error('MongoDB connection error:', err));
 }
+
 
 
 
@@ -53,18 +57,11 @@ async function loadEvents() {
     }
 }
 
-
-    
-
-   
-
-
-
-async function start_bot(client, token, mongoURI) {
+async function start_bot(client, token) {
     try {
         console.log('Початок завантаження подій...');
         await loadEvents();
-        await mongodbConnect(mongoURI);
+        await mongodbConnect();
         await client.login(token);
     } catch (error) {
         lg.error('Виникла помилка при спробі запустити бота(start_bot):', error);
