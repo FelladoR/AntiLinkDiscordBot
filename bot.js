@@ -15,9 +15,9 @@ const __dirname = dirname(__filename);
 const mongoURI = process.env.MONGODB_TOKEN;
 const lg = new Logger('Bot');
 
-async function mongodbConnect() {
+async function mongodbConnect(mongoURI) {
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
+        await mongoose.connect(mongoURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
@@ -57,11 +57,11 @@ async function loadEvents() {
     }
 }
 
-async function start_bot(client, token) {
+async function start_bot(client, token, mongoURI) {
     try {
         console.log('Початок завантаження подій...');
         await loadEvents();
-        await mongodbConnect();
+        await mongodbConnect(mongoURI);
         await client.login(token);
     } catch (error) {
         lg.error('Виникла помилка при спробі запустити бота(start_bot):', error);
