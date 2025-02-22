@@ -1,9 +1,9 @@
-const { discord, EmbedBuilder } = require('discord.js');
-const { getTranslation } = require('./helper');
-const Logger = require('./logs');
-lg = new Logger('Bot');
+import { EmbedBuilder } from 'discord.js';
+import { getTranslation } from './helper.js';
+import Logger from './logs.js';
+const lg = new Logger('Bot');
 
-async function sendBanMessage(user, guild) {
+export async function sendBanMessage(user, guild) {
 	try {
 		if (!user.dmChannel) {
 			await user.createDM();
@@ -34,7 +34,7 @@ async function sendBanMessage(user, guild) {
 
 }
 
-async function canBotBanMember(bot, member) {
+export async function canBotBanMember(bot, member) {
 
 	const hasBanPermission = bot.permissions.has('BAN_MEMBERS');
 
@@ -42,7 +42,3 @@ async function canBotBanMember(bot, member) {
 
 	return hasBanPermission && isHigherRole;
 }
-module.exports = {
-	sendBanMessage,
-	canBotBanMember,
-};

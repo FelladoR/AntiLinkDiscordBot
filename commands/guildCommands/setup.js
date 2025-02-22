@@ -1,16 +1,12 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { EmbedBuilder, MessageFlags, Message, ChannelType, TextInputStyle } = require('discord.js');
-require('moment-duration-format');
-const Guild = require('../../Schemas/guildSchema');
-const { clear_guild_language_cache, getTranslation, colors } = require('../../utils/helper');
-const { get } = require('mongoose');
-const { check_owner_permission } = require('../../utils/settingsHandler');
-const User = require('../../Schemas/userSchema');
+import{ SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder, MessageFlags, Message, ChannelType, TextInputStyle } from 'discord.js';
+import 'moment-duration-format'
+import Guild from '../../Schemas/guildSchema.js';
+import { clear_guild_language_cache, getTranslation, colors } from '../../utils/helper.js';
+import { check_owner_permission } from '../../utils/settingsHandler.js';
 
-const Logger = require('../../utils/logs')
-ls = new Logger('Bot')
-module.exports = {
-	data: new SlashCommandBuilder()
+
+	export const data = new SlashCommandBuilder()
 		.setName('setup')
 		.setDescription('Змінює налаштування певного параметру у вашій гільдії')
 		.addSubcommand(subcommand =>
@@ -69,9 +65,9 @@ module.exports = {
 			subcommand
 				.setName('logchannel_delete')
 				.setDescription('Видаляє канал логів на вашій гільдії'),
-		),
+		)
 
-	async autocomplete(interaction) {
+	export async function autocomplete(interaction) {
 
 
 		try {
@@ -96,10 +92,10 @@ module.exports = {
 		catch (error) {
 			console.error('Error fetching webhooks:', error);
 		}
-	},
+	}
 
 
-	async execute(interaction) {
+	export async function execute(interaction) {
 
 		if (interaction.options.getSubcommand() === 'log_channel') {
 
@@ -229,7 +225,7 @@ module.exports = {
 						{ _id: interaction.guild.id },
 						{ $set: { language: lang } },
 					);
-					clear_guild_language_cache(interaction.guild.id);
+					await clear_guild_language_cache(interaction.guild.id);
 					const SuccessfullEmbed = new EmbedBuilder()
 						.setColor(colors.SUCCESSFUL_COLOR)
 						.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
@@ -308,5 +304,4 @@ module.exports = {
 		}
 
 
-	},
-};
+	}

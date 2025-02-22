@@ -1,14 +1,15 @@
-const Guild = require('../Schemas/guildSchema');
-const User = require('../Schemas/userSchema');
-const { EmbedBuilder } = require('discord.js');
-const { getTranslation } = require('./helper');
-const { guild_link_delete_log, guild_ban_log } = require('./guildLogs');
-const { banLogs, linkLogs } = require('./devLogs');
-const { sendBanMessage } = require('../utils/sendDmMessages');
-const Logger = require('./logs');
-lg = new Logger('Bot');
+import Guild from '../Schemas/guildSchema.js';
+import User from '../Schemas/userSchema.js';
+import { EmbedBuilder } from 'discord.js';
+import { getTranslation } from './helper.js';
+import { guild_link_delete_log, guild_ban_log } from './guildLogs.js';
+import { banLogs, linkLogs } from './devLogs.js';
+import { sendBanMessage } from '../utils/sendDmMessages.js';
 
-async function ban_member(message, user_cache) {
+import Logger from './logs.js';
+const lg = new Logger('Bot');
+
+export async function ban_member(message, user_cache) {
 	try {
 		const member = message.guild.members.cache.get(message.author.id);
 		const channel_name = message.channel.name;
@@ -37,7 +38,7 @@ async function ban_member(message, user_cache) {
 	}
 }
 
-async function delete_message_and_notice(message, userData, channel_name) {
+export async function delete_message_and_notice(message, userData, channel_name) {
 	try {
 		const user = message.author;
 		const guild = message.guild;
@@ -71,7 +72,7 @@ async function delete_message_and_notice(message, userData, channel_name) {
 	}
 }
 
-async function check_blocking(message) {
+export async function check_blocking(message) {
 	try {
 		const guildData = await Guild.findOne({ _id: message.guild.id });
 
@@ -88,7 +89,7 @@ async function check_blocking(message) {
 	}
 }
 
-async function check_whitelist_and_owner(message) {
+export async function check_whitelist_and_owner(message) {
 	try {
 		const guildData = await Guild.findOne({ _id: message.guild.id });
 		const whitelist_data = guildData ? guildData.whitelist : [];
@@ -121,9 +122,3 @@ async function check_whitelist_and_owner(message) {
 		lg.error('Сталася помилка:', error);
 	}
 }
-module.exports = {
-	ban_member,
-	delete_message_and_notice,
-	check_blocking,
-	check_whitelist_and_owner,
-};

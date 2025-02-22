@@ -1,16 +1,16 @@
-const { Events, Collection, REST, Routes, EmbedBuilder } = require('discord.js');
-const path = require('path');
-const fs = require('fs');
-require('dotenv').config();
-const Guild = require('../Schemas/guildSchema');
-const { sendLeaveLogs } = require('../utils/devLogs');
-const Logger = require('../utils/logs');
-lg = new Logger('Bot');
+import { Events, Collection, REST, Routes, EmbedBuilder } from 'discord.js';
+import 'dotenv/config'
+import Guild from '../Schemas/guildSchema.js';
+import { sendLeaveLogs } from '../utils/devLogs.js';
+import Logger from '../utils/logs.js';
+const lg = new Logger('Bot');
 
-module.exports = {
+export default {
 	name: Events.GuildDelete,
 	once: false,
-	async execute(guild) {
+
+    async execute(guild) {
+    lg.info('Виклик івенту guildDelete');
 		try {
 			const client = guild.client;
 
@@ -29,6 +29,5 @@ module.exports = {
 		catch (error) {
 			lg.error('Помилка у GuildDelete:', error);
 		}
-	},
-};
-
+	}
+}

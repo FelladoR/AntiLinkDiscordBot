@@ -1,15 +1,15 @@
-const { Events } = require('discord.js');
-require('dotenv').config();
-const Guild = require('../Schemas/guildSchema');
-const User = require('../Schemas/userSchema');
-const { canBotBanMember } = require('../utils/sendDmMessages');
+import { Events } from 'discord.js';
+import 'dotenv/config'
+import Guild from '../Schemas/guildSchema.js';
+import User from '../Schemas/userSchema.js';
+import { canBotBanMember } from '../utils/sendDmMessages.js';
 
-const { warning_cache_check, add_warns_to_cache } = require('../utils/userWarningsCaching');
-const { ban_member, delete_message_and_notice, check_blocking, check_whitelist_and_owner } = require('../utils/memberBan');
-const Logger = require('../utils/logs');
-lg = new Logger('Bot');
+import { warning_cache_check, add_warns_to_cache } from '../utils/userWarningsCaching.js';
+import { ban_member, delete_message_and_notice, check_blocking, check_whitelist_and_owner } from '../utils/memberBan.js';
+import Logger from '../utils/logs.js';
+const lg = new Logger('Bot');
 
-module.exports = {
+export default {
 	name: Events.MessageCreate,
 
 	async execute(message) {

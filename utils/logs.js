@@ -1,6 +1,6 @@
-const fs = require('fs');
-const util = require('util');
-const path = require('path');
+import fs from 'fs';
+import util from 'util';
+import path from 'path';
 
 const COLORS = {
 	reset: '\x1b[0m',
@@ -142,4 +142,4 @@ class Logger {
 	success(...args) { this.log('success', ...args); }
 }
 
-module.exports = Logger;
+export default Logger

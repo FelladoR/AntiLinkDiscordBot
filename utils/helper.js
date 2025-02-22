@@ -1,16 +1,23 @@
-const fs = require('fs');
-const path = require('path');
-const mongoose = require('mongoose');
-const Guild = require('../Schemas/guildSchema');
-const Logger = require('./logs');
-lg = new Logger('Bot');
+import fs from 'fs';
+import path from 'path';
+import Guild from '../Schemas/guildSchema.js';
+import Logger from './logs.js';
+
+import { dirname } from 'path'
+import { fileURLToPath } from 'url';
+import { pathToFileURL } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const lg = new Logger('Bot');
 const cachedTranslations = {};
 const cachedGuildLanguages = {};
 
 const CACHE_TTL = 10 * 60 * 1000; // 10 mins
 const cachedTimestamps = {};
 
-function load_translations(language) {
+export async function load_translations(language) {
 	if (cachedTranslations[language] && (Date.now() - cachedTimestamps[language] < CACHE_TTL)) {
 		return cachedTranslations[language];
 	}
@@ -37,7 +44,7 @@ function load_translations(language) {
 }
 
 // Отримання мови гільдії з кешем
-async function get_guild_language(guildId) {
+export async function get_guild_language(guildId) {
 	if (cachedGuildLanguages[guildId] && (Date.now() - cachedGuildLanguages[guildId].timestamp < CACHE_TTL)) {
 		return cachedGuildLanguages[guildId].language;
 	}
@@ -62,7 +69,7 @@ async function get_guild_language(guildId) {
 }
 
 // Очищення кешу мови для гільдії
-function clear_guild_language_cache(guildId) {
+export async function clear_guild_language_cache(guildId) {
 	if (cachedGuildLanguages[guildId]) {
 		delete cachedGuildLanguages[guildId];
 	}
@@ -71,10 +78,10 @@ function clear_guild_language_cache(guildId) {
 }
 
 // Функція для отримання перекладу, яка підтримує підстановку змінних
-async function getTranslation(guildId, phrase, variables = {}) {
+export async function getTranslation(guildId, phrase, variables = {}) {
 	const lang = await get_guild_language(guildId);
 
-	const translations = load_translations(lang);
+	const translations = await load_translations(lang);
 	if (!translations) {
 		return `Переклад для "${phrase}" відсутній`;
 	}
@@ -89,13 +96,8 @@ async function getTranslation(guildId, phrase, variables = {}) {
 	return translation;
 }
 
-module.exports = {
-	load_translations,
-	getTranslation,
-	get_guild_language,
-	clear_guild_language_cache,
-	colors: {
+
+	export const colors = {
 		SUCCESSFUL_COLOR: '#86fa50',
 		ERROR_COLOR: '#fa7850',
-	},
-};
+	}

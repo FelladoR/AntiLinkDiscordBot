@@ -1,17 +1,17 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { EmbedBuilder, MessageFlags } = require('discord.js');
-const Guild = require('../../Schemas/guildSchema');
-const { getTranslation } = require('../../utils/helper');
-const { settingsHandler } = require('../../utils/settingsHandler');
-const Logger = require('../../utils/logs');
-lg = new Logger('Bot');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
+import Guild from '../../Schemas/guildSchema.js';
+import { getTranslation } from '../../utils/helper.js';
+import { settingsHandler } from '../../utils/settingsHandler.js';
+import Logger from '../../utils/logs.js';
+const lg = new Logger('Bot');
 
-module.exports = {
-	data: new SlashCommandBuilder()
+
+	export const data = new SlashCommandBuilder()
 		.setName('settings')
-		.setDescription('Відкриває налаштування вашої гільдії'),
+		.setDescription('Відкриває налаштування вашої гільдії')
 
-	async execute(interaction) {
+	export async function execute(interaction) {
 		try {
 			const guildData = await Guild.findOne({ _id: interaction.guild.id });
 
@@ -40,6 +40,4 @@ module.exports = {
 		catch (error) {
 			lg.error('Помилка settings.js: ' + error);
 		}
-	},
-};
-
+	}

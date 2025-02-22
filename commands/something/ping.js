@@ -1,17 +1,14 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { EmbedBuilder } = require('discord.js');
-const moment = require('moment');
-require('moment-duration-format');
-const { version } = require('discord.js');
-const { getTranslation } = require('../../utils/helper');
-module.exports = {
-	cooldown: 3,
-	data: new SlashCommandBuilder()
-		.setName('ping')
-		.setDescription('Replies with Pong!'),
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder, version} from 'discord.js';
+import moment from 'moment';
+import 'moment-duration-format'
+import { getTranslation } from '../../utils/helper.js';
 
+    export const data = new SlashCommandBuilder()
+        .setName('ping')
+		.setDescription('Replies with Pong!')
 	// Визначення execute з параметром client
-	async execute(interaction) {
+	export async function execute(interaction) {
 		// Перевіряємо, чи доступне uptime через переданий client
 		const client = interaction.client;
 		if (!client.uptime) {
@@ -42,5 +39,4 @@ module.exports = {
 		else {
 			await interaction.reply({ content: '', embeds: [ExampleEmbed] });
 		}
-	},
-};
+	}

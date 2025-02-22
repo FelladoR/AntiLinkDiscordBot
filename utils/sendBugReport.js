@@ -1,10 +1,10 @@
-const { EmbedBuilder, WebhookClient, MessageFlags } = require('discord.js');
-const { colors, getTranslation } = require('./helper');
-const { settingsHandler } = require('./settingsHandler');
-const Logger = require('./logs');
-lg = new Logger('Bot');
+import { EmbedBuilder, WebhookClient, MessageFlags } from 'discord.js';
+import { colors, getTranslation } from './helper.js';
+import { settingsHandler } from './settingsHandler.js';
+import Logger from './logs.js';
+const lg = new Logger('Bot')
 
-async function send_webhook(interaction, bug_text, reproduce_text) {
+export async function send_webhook(interaction, bug_text, reproduce_text) {
 	try {
 		if (!interaction.customId === 'bug_report') return;
 		const webhook = new WebhookClient({ url: process.env.BUG_WEBHOOK });
@@ -33,8 +33,3 @@ async function send_webhook(interaction, bug_text, reproduce_text) {
 		lg.error('send_webhook error: ' + error);
 	}
 }
-
-
-module.exports = {
-	send_webhook,
-};

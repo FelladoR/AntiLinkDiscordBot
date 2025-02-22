@@ -1,10 +1,10 @@
-const { EmbedBuilder, WebhookClient } = require('discord.js');
-const Guild = require('../Schemas/guildSchema');
-const { getTranslation } = require('../utils/helper');
-const Logger = require('./logs');
-lg = new Logger('Bot');
+import { EmbedBuilder, WebhookClient } from 'discord.js';
+import Guild from '../Schemas/guildSchema.js';
+import { getTranslation } from '../utils/helper.js';
+import Logger from './logs.js';
+const lg = new Logger('Bot');
 
-async function guild_link_delete_log(message, user_id, channel_name) {
+export async function guild_link_delete_log(message, user_id, channel_name) {
     try{
         guildData = await Guild.findOne({ _id: message.guild.id });
         guild_logchannel = guildData.logchannel;
@@ -28,7 +28,7 @@ async function guild_link_delete_log(message, user_id, channel_name) {
 	
 }
 
-async function guild_ban_log(message, user_id, channel_name) {
+export async function guild_ban_log(message, user_id, channel_name) {
     try{
         guildData = await Guild.findOne({ _id: message.guild.id });
         guild_logchannel = guildData.logchannel;
@@ -52,7 +52,3 @@ async function guild_ban_log(message, user_id, channel_name) {
     }
 	
 }
-module.exports = {
-	guild_link_delete_log,
-	guild_ban_log,
-};

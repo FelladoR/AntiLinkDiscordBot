@@ -1,10 +1,11 @@
-const User = require('../Schemas/userSchema');
+import User from '../Schemas/userSchema.js';
+import Logger from './logs.js';
+const lg = new Logger('Bot');
+
 const UserWarnsCache = new Map();
 const CACHE_TTL = 10 * 60 * 500; // 5 хв збереження кешу
-const Logger = require('./logs');
-lg = new Logger('Bot');
 
-async function warning_cache_check(message) {
+export async function warning_cache_check(message) {
 	try {
 		const cacheEntry = UserWarnsCache.get(message.author.id);
 
@@ -25,7 +26,7 @@ async function warning_cache_check(message) {
 
 }
 
-async function add_warns_to_cache(user_id) {
+export async function add_warns_to_cache(user_id) {
 	try {
 		const cacheEntry = UserWarnsCache.get(user_id);
 		const updated_warns = cacheEntry ? cacheEntry.warns + 1 : 1;
@@ -48,7 +49,7 @@ setInterval(() => {
 	}
 }, CACHE_TTL);
 
-function delete_cache(user_id) {
+export function delete_cache(user_id) {
 	try {
 
 		const cacheEntry = UserWarnsCache.get(user_id);
@@ -63,8 +64,3 @@ function delete_cache(user_id) {
 		lg.error(error);
 	}
 }
-module.exports = {
-	warning_cache_check,
-	add_warns_to_cache,
-	delete_cache,
-};

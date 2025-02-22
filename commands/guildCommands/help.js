@@ -1,16 +1,17 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { EmbedBuilder, MessageFlags } = require('discord.js');
-const { getTranslation } = require('../../utils/helper');
-const { get_emojis_for_message } = require('../../utils/settingsHandler');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
+import { getTranslation } from '../../utils/helper.js';
+import{ get_emojis_for_message } from '../../utils/settingsHandler.js';
 
-const Logger = require('../../utils/logs');
-lg = new Logger('Bot');
-module.exports = {
-	data: new SlashCommandBuilder()
+import Logger from '../../utils/logs.js';
+const lg = new Logger('Bot');
+
+
+	export const data = new SlashCommandBuilder()
 		.setName('help')
-		.setDescription('Показує список доступних команд в боті'),
+		.setDescription('Показує список доступних команд в боті')
 
-	async execute(interaction) {
+	export async function execute(interaction) {
 		try {
 			const support_server = await interaction.client.guilds.cache.get(process.env.SUPPORT_SERVER_ID);
 			const emoji_pack = await get_emojis_for_message(support_server);
@@ -30,6 +31,4 @@ module.exports = {
 		catch (error) {
 			lg.error('Помилка settings.js: ' + error);
 		}
-	},
-};
-
+    }

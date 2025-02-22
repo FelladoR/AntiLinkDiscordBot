@@ -1,16 +1,18 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { EmbedBuilder } = require('discord.js');
-const Warning = require('../../Schemas/userSchema'); // Шлях до схеми попереджень
-require('dotenv').config();
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder } from 'discord.js';
+import Warning from '../../Schemas/userSchema.js'; // Шлях до схеми попереджень
+import 'dotenv/config'
+import { delete_cache } from '../../utils/userWarningsCaching.js';
+
 const SUPPORT_SERVER_ID = process.env.SUPPORT_SERVER_ID;
 const MOD_ROLE_ID = process.env.MOD_ROLE_ID;
 const DEV_ROLE_ID = process.env.DEV_ROLE_ID;
-const { delete_cache } = require('../../utils/userWarningsCaching');
 
-const Logger = require('../../utils/logs');
-lg = new Logger('Bot');
-module.exports = {
-	data: new SlashCommandBuilder()
+
+import Logger from '../../utils/logs.js';
+const lg = new Logger('Bot');
+
+    export const data = new SlashCommandBuilder()
 		.setName('warn')
 		.setDescription('Команда для видачі попередження користувачу')
 		.addStringOption(option =>
@@ -36,10 +38,10 @@ module.exports = {
 			option.setName('proofs')
 				.setDescription('Докази порушення')
 				.setRequired(true),
-		),
+		)
 
 
-	async execute(interaction) {
+	export async function execute(interaction) {
 		const role = interaction.guild.roles.cache.get(MOD_ROLE_ID);
 		if (interaction.guild.id == SUPPORT_SERVER_ID) {
 
@@ -80,5 +82,4 @@ module.exports = {
 			return;
 		}
 
-	},
-};
+    }

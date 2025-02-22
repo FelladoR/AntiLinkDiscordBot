@@ -1,16 +1,17 @@
-const { EmbedBuilder, SlashCommandBuilder, WebhookClient, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { getTranslation } = require('../../utils/helper');
-const Logger = require('../../utils/logs');
-lg = new Logger('Bot');
+import { EmbedBuilder, SlashCommandBuilder, WebhookClient, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
+import { getTranslation } from '../../utils/helper.js';
+import Logger from '../../utils/logs.js';
+import 'dotenv/config'
+const lg = new Logger('Bot');
 
-require('dotenv');
-module.exports = {
-	cooldown: 120,
-	data: new SlashCommandBuilder()
-		.setName('bug')
-		.setDescription('Відправляє знайдений вами баг розробнику'),
 
-	async execute(interaction) {
+    export const cooldown = 120
+    export const data = new SlashCommandBuilder()
+        .setName('bug')
+        .setDescription('Відправляє знайдений вами баг розробнику');
+
+    
+	export async function execute(interaction) {
 		try {
 
 			const modal = new ModalBuilder()
@@ -42,6 +43,4 @@ module.exports = {
 		catch (error) {
 			lg.error('bug error: ' + error);
 		}
-	},
-
-};
+    }

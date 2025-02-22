@@ -1,21 +1,21 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { EmbedBuilder } = require('discord.js');
-const Warning = require('../../Schemas/userSchema');
-const { getTranslation } = require('../../utils/helper');
-const Logger = require('../../utils/logs');
-lg = new Logger('Bot');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { EmbedBuilder } from 'discord.js';
+import Warning from '../../Schemas/userSchema.js';
+import { getTranslation } from '../../utils/helper.js';
+import Logger from '../../utils/logs.js';
+const lg = new Logger('Bot');
 
-module.exports = {
-	data: new SlashCommandBuilder()
+
+	export const data =  new SlashCommandBuilder()
 		.setName('warns')
 		.setDescription('Команда для перевірки попереджень користувача')
 		.addStringOption(option =>
 			option.setName('user_id')
 				.setDescription('ID користувача для перевірки')
 				.setRequired(true),
-		),
+		)
 
-	async execute(interaction) {
+	export async function execute(interaction) {
 		const userId = interaction.options.getString('user_id');
 
 		// Перевірка, чи є це число
@@ -87,5 +87,4 @@ module.exports = {
 				ephemeral: true,
 			});
 		}
-	},
-};
+	}

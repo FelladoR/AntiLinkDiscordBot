@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // Створення схеми для користувача
 const guildSchema = new mongoose.Schema({
@@ -28,5 +28,4 @@ const guildSchema = new mongoose.Schema({
 
 const Guild = mongoose.model('Guild', guildSchema);
 
-module.exports = Guild;
-
+export default Guild

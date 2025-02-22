@@ -1,58 +1,73 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const Logger = require('./utils/logs');
-const { Client, Collection, Events, GatewayIntentBits, REST, Routes } = require('discord.js');
-require('dotenv').config();
-lg = new Logger('Bot');
-const mongoose = require('mongoose');
-const { load_translations, getTransation } = require('./utils/helper');
-const mongoURI = process.env.MONGODB_TOKEN;
+import fs from 'node:fs';
+import path from 'node:path';
+import Logger from './utils/logs.js';
+import{ Client, Collection, Events, GatewayIntentBits, REST, Routes } from 'discord.js';
+import 'dotenv/config'
 
+import mongoose from 'mongoose';
+import { dirname } from 'path'
+import { fileURLToPath } from 'url';
+import { pathToFileURL } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const mongoURI = process.env.MONGODB_TOKEN;
+const lg = new Logger('Bot');
 async function mongodbConnect() {
 
-	// Підключення до MongoDB
-	mongoose.connect(mongoURI, {
-
-	})
+	mongoose.connect(mongoURI)
 		.then(() => lg.info('Connected to MongoDB'))
 		.catch((err) => lg.error('MongoDB connection error:', err));
 }
 
 
-// Токен бота та ID
-const token = process.env.TOKEN;
-const clientId = process.env.CLIENT_ID; // Ваш client ID
-const guildId = process.env.GUILD_ID; // ID сервера (guild) для реєстрації команд
 
-// Ініціалізація клієнта DiscordА
+const token = process.env.TOKEN;
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
-for (const file of eventFiles) {
-	lg.info(`Івент ${file} завантажено!`);
-	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	}
-	else {
-		client.on(event.name, (...args) => event.execute(...args));
-	}
+async function loadEvents() {
+    for (const file of eventFiles) {
+        lg.success(`Івент ${file} завантажується`);
+        const filePath = path.join(eventsPath, file);
+        const fileURL = pathToFileURL(filePath).href;
+
+        try {
+            const event = await import(fileURL);
+            if (event.default.once) {
+                client.once(event.default.name, (...args) => event.default.execute(...args));
+            } else {
+                client.on(event.default.name, (...args) => event.default.execute(...args));
+            }
+        } catch (error) {
+            lg.error(`Помилка під час імпорту ${file}:`, error);
+        }
+    }
 }
 
-// Авторизація бота
+
+    
+
+   
+
+
+
 async function start_bot(client, token, mongoURI) {
-	try {
-		await mongodbConnect(mongoURI);
-		await client.login(token);
-	}
-	catch (error) {
-		console.log('Виникла помилка при спробі запустити бота(start_bot)' + error);
-		return;
-	}
+    try {
+        console.log('Початок завантаження подій...');
+        await loadEvents();
+        await mongodbConnect(mongoURI);
+        await client.login(token);
+    } catch (error) {
+        lg.error('Виникла помилка при спробі запустити бота(start_bot):', error);
+        return;
+    }
 }
+
 
 
 start_bot(client, token, mongoURI);

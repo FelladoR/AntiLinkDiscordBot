@@ -1,16 +1,16 @@
-const { Events, Collection, REST, Routes, EmbedBuilder } = require('discord.js');
-const path = require('path');
-const fs = require('fs');
-require('dotenv').config();
-const Guild = require('../Schemas/guildSchema');
-const { sendJoinLogs } = require('../utils/devLogs');
-const Logger = require('../utils/logs');
-lg = new Logger('Bot');
+import { Events, Collection, REST, Routes, EmbedBuilder } from 'discord.js';
+import 'dotenv/config'
+import Guild from '../Schemas/guildSchema.js';
+import { sendJoinLogs } from '../utils/devLogs.js';
+import Logger from '../utils/logs.js';
 
-module.exports = {
+const lg = new Logger();
+
+export default {
 	name: Events.GuildCreate,
 	once: false,
 	async execute(guild) {
+        lg.info('Виклик івенту GuildCreate');
 		try {
 
 			const client = guild.client;
