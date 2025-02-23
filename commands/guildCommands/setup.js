@@ -2,7 +2,8 @@ import{ SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder, MessageFlags, Message, ChannelType, TextInputStyle } from 'discord.js';
 import 'moment-duration-format'
 import Guild from '../../Schemas/guildSchema.js';
-import { clear_guild_language_cache, getTranslation, colors } from '../../utils/helper.js';
+import { clear_guild_language_cache, get_lang, colors } from '../../utils/helper.js';
+import texts from '../../utils/texts.js';
 import { check_owner_permission } from '../../utils/settingsHandler.js';
 
 
@@ -96,15 +97,16 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 
 
 	export async function execute(interaction) {
-
+        const lang = await get_lang(interaction.client, interaction.guild.id);
 		if (interaction.options.getSubcommand() === 'log_channel') {
+            const lang = await get_lang(interaction.client, interaction.guild.id);
 
 			const isOwner = await check_owner_permission(interaction);
+
 			if (isOwner === true) {
 				try {
 					const guildData = await Guild.findOne({ _id: interaction.guild.id });
 					const webhookId = interaction.options.getString('webhook'); // Отримуємо webhook ID з опцій
-					console.log(webhookId);
 					const webhooks = await interaction.guild.fetchWebhooks();
 					const webhook = webhooks.get(webhookId); // Отримуємо вебхук з мапи
 
@@ -112,10 +114,9 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 						return await interaction.reply({ content: '❌ Вебхук не знайдено!', ephemeral: true });
 					}
 					const webhookUrl = `https://discord.com/api/webhooks/${webhook.id}/${webhook.token}`;
-					console.log('Знайдені вебхуки:', webhooks.map(wh => ({ name: wh.name, id: wh.id })));
 
 					if (webhookId === guildData.logchannel) {
-						await interaction.reply({ content: await getTranslation(interaction.guild.id, 'setup_logchannel_webhoook_isthesame'), ephemeral: true });
+						await interaction.reply({ content: texts[lang].setup_logchannel_webhoook_isthesame, ephemeral: true });
 						return;
 					}
 
@@ -124,15 +125,15 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 					const SuccessfullEmbed = new EmbedBuilder()
 						.setColor(colors.SUCCESSFUL_COLOR)
 						.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-						.setTitle(await getTranslation(interaction.guild.id, 'setup_successful'))
-						.setDescription(await getTranslation(interaction.guild.id, 'setup_logchannel_changed'));
+						.setTitle(texts[lang].setup_successful)
+						.setDescription(texts[lang].setup_logchannel_changed);
 
 					await interaction.reply({ embeds: [SuccessfullEmbed], ephemeral: true });
 
 				}
 				catch (error) {
 					console.error(error);
-					await interaction.reply(await getTranslation(interaction.guild.id, 'main_error_message'));
+					await interaction.reply(texts[lang].main_error_message);
 				}
 			}
 
@@ -140,7 +141,7 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 
 
 		if (interaction.options.getSubcommand() === 'logchannel_delete') {
-
+            const lang = await get_lang(interaction.client, interaction.guild.id);
 			const isOwner = await check_owner_permission(interaction);
 			if (isOwner === true) {
 				try {
@@ -149,8 +150,8 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 					const SuccessfullEmbed = new EmbedBuilder()
 						.setColor(0xAEFFD8)
 						.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-						.setTitle(await getTranslation(interaction.guild.id, 'setup_successful'))
-						.setDescription(await getTranslation(interaction.guild.id, 'setup_logchannel_changed'));
+						.setTitle(texts[lang].setup_successful)
+						.setDescription(texts[lang].setup_logchannel_changed);
 
 					if (!guildData) {
 						guildData = new Guild({ _id: interaction.guild.id });
@@ -172,7 +173,7 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 
 				}
 				catch (error) {
-					await interaction.reply(await getTranslation(interaction.guild.id, 'main_error_message'));
+					await interaction.reply(texts[lang].main_error_message);
 					return;
 				}
 			}
@@ -180,6 +181,7 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 
 		}
 		if (interaction.options.getSubcommand() === 'whitelist') {
+            const lang = await get_lang(interaction.client, interaction.guild.id);
 			try {
 				const role = interaction.options.getRole('role');
 
@@ -195,27 +197,27 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 					const SuccessfullEmbed = new EmbedBuilder()
 						.setColor(colors.SUCCESSFUL_COLOR)
 						.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-						.setTitle(await getTranslation(interaction.guild.id, 'setup_successful'))
-						.setDescription(await getTranslation(interaction.guild.id, 'setup_whitelist_changed', { role }));
+						.setTitle(texts[lang].setup_successful)
+						.setDescription(texts[lang].setup_whitelist_changed, { role });
 					await interaction.reply({ embeds: [SuccessfullEmbed], flags: MessageFlags.Ephemeral });
 				}
 				else {
-					await interaction.reply({ content: await getTranslation(interaction.guild.id, 'setup_whitelist_already_is'), flags: MessageFlags.Ephemeral });
+					await interaction.reply({ content: texts[lang].setup_whitelist_already_is, flags: MessageFlags.Ephemeral });
 				}
 			}
 			catch (error) {
-				await interaction.reply(await getTranslation(interaction.guild.id, 'main_error_message'));
-				console.log('setup_whitelist error' + error);
+				await interaction.reply(texts[lang].main_error_message);
+				lg.error('setup_whitelist error' + error);
 				return;
 			}
 		}
 		if (interaction.options.getSubcommand() === 'language') {
 			const isOwner = await check_owner_permission(interaction);
+            const lang = await get_lang(interaction.client, interaction.guild.id);
 			if (isOwner === true) {
 				try {
-					const lang = interaction.options.getString('set_language_option');
+					const language = interaction.options.getString('set_language_option');
 					let guildData = await Guild.findOne({ _id: interaction.guild.id });
-					console.log(guildData);
 
 					if (!guildData) {
 						guildData = new Guild({ _id: interaction.guild.id });
@@ -223,27 +225,28 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 					}
 					await Guild.updateOne(
 						{ _id: interaction.guild.id },
-						{ $set: { language: lang } },
+						{ $set: { language: language } },
 					);
-					await clear_guild_language_cache(interaction.guild.id);
+					await clear_guild_language_cache(interaction.client, interaction.guild.id);
+
 					const SuccessfullEmbed = new EmbedBuilder()
 						.setColor(colors.SUCCESSFUL_COLOR)
 						.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-						.setTitle(await getTranslation(interaction.guild.id, 'setup_successful'))
-						.setDescription(await getTranslation(interaction.guild.id, 'setup_language_changed', { lang }));
-					await interaction.reply({ embeds: [SuccessfullEmbed], flags: MessageFlags.Ephemeral });
+						.setTitle(texts[language].setup_successful)
+						.setDescription(texts[language].setup_language_changed.replace('${lang}', language));
+
+					await interaction.reply({ embeds: [SuccessfullEmbed], ephemeral: true });
 
 				}
 				catch (error) {
-					await interaction.reply(await getTranslation(interaction.guild.id, 'main_error_message'));
+					await interaction.reply(texts[lang].main_error_message);
 					return;
 				}
 			}
-
-
 		}
 
 		if (interaction.options.getSubcommand() === 'ban_users') {
+            const lang = await get_lang(interaction.client, interaction.guild.id);
 			const isOwner = await check_owner_permission(interaction);
 			if (isOwner === true) {
 				try {
@@ -257,7 +260,7 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 						await guildData.save();
 					}
 					if (guildData.blocking_enabled === isChoiceTrue) { // Перевірка, чи було введено той самий параметр, який вже встановлений на сервері
-						await interaction.reply(await getTranslation(interaction.guild.id, 'setup_banusers_isthesame'));
+						await interaction.reply(texts[lang].setup_banusers_isthesame);
 						return;
 					}
 					if (choice === 'true') {
@@ -269,12 +272,12 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 							const SuccessfullEmbed = new EmbedBuilder()
 								.setColor(colors.SUCCESSFUL_COLOR)
 								.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-								.setTitle(await getTranslation(interaction.guild.id, 'setup_successful'))
-								.setDescription(await getTranslation(interaction.guild.id, 'setup_banusers_enabled'));
+								.setTitle(texts[lang].setup_successful)
+								.setDescription(texts[lang].setup_banusers_enabled);
 							await interaction.reply({ embeds: [SuccessfullEmbed], flags: MessageFlags.Ephemeral });
 						}
 						catch (error) {
-							console.log(error);
+							lg.error(error);
 						}
 					}
 					else if (choice === 'false') {
@@ -286,18 +289,18 @@ import { check_owner_permission } from '../../utils/settingsHandler.js';
 							const SuccessfullEmbed = new EmbedBuilder()
 								.setColor(colors.SUCCESSFUL_COLOR)
 								.setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 1024 }))
-								.setTitle(await getTranslation(interaction.guild.id, 'setup_successful'))
-								.setDescription(await getTranslation(interaction.guild.id, 'setup_banusers_disabled'));
+								.setTitle(texts[lang].setup_successful)
+								.setDescription(texts[lang].setup_banusers_disabled);
 							await interaction.reply({ embeds: [SuccessfullEmbed], flags: MessageFlags.Ephemeral });
 						}
 						catch (error) {
-							console.log(error);
+							lg.error(error);
 						}
 					}
 
 				}
 				catch (error) {
-					console.log(error);
+					lg.error(error);
 				}
 			}
 

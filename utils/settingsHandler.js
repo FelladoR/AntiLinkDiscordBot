@@ -1,4 +1,5 @@
-import { getTranslation } from './helper.js';
+import { get_lang } from './helper.js';
+import texts from './texts.js';
 import Guild from '../Schemas/guildSchema.js';
 import Logger from './logs.js';
 const lg = new Logger('Bot');
@@ -35,6 +36,7 @@ export async function get_emojis_for_message(support_server) {
 
 
 export async function settingsHandler(interaction) {
+    const lang = await get_lang(interaction.client, interaction.guild.id);
     const support_server = await interaction.client.guilds.cache.get(process.env.SUPPORT_SERVER_ID);
     if (!support_server) {
         lg.warn('Не вдалось знайти сервер підтримки');
@@ -49,9 +51,9 @@ export async function settingsHandler(interaction) {
     const emoji_pack = await get_emojis_for_message(support_server);
     let userblocking;
     if(guildData.blocking_enabled === true){
-        userblocking = await getTranslation(interaction.guild.id, "settings_enabled");
+        userblocking = texts[lang].settings_enabled;
     } else if(guildData.blocking_enabled === false) {
-        userblocking = await getTranslation(interaction.guild.id, "settings_disabled");
+        userblocking = texts[lang].settings_disabled;
     }
 
     let webhook_name, webhook_channel;
@@ -62,7 +64,7 @@ export async function settingsHandler(interaction) {
             webhook_channel = webhook.channel;
         }
     } else {
-        webhook_name = webhook_channel = await getTranslation(interaction.guild.id, "settings_nodata");
+        webhook_name = webhook_channel = texts[lang].settings_nodata;
     }
 
     return {
@@ -108,14 +110,14 @@ export async function check_owner_permission(interaction) {
         if(user.id != guild.ownerId) {
 
             const NO_PERMS_MESSAGE = await interaction.reply({
-                content: await getTranslation(guild.id, "no_perms"), fetchReply: true})
+                content: texts[lang].no_perms, fetchReply: true})
             return NO_PERMS_MESSAGE 
         } else{
             return true
         }
         
     }catch(error) {
-        console.log('check_owner error:' + error)
+        lg.error('check_owner error:' + error)
     }
     
 } 

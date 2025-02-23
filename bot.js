@@ -21,7 +21,7 @@ async function mongodbConnect(mongoURI) {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log('MongoDB підключено');
+        lg.success('MongoDB підключено');
     } catch (error) {
         console.error('Помилка підключення до MongoDB:', error);
         process.exit(1);
@@ -59,7 +59,6 @@ async function loadEvents() {
 
 async function start_bot(client, token, mongoURI) {
     try {
-        console.log('Початок завантаження подій...');
         await loadEvents();
         await mongodbConnect(mongoURI);
         await client.login(token);

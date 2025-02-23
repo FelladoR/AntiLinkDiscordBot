@@ -1,7 +1,8 @@
 import Guild from '../Schemas/guildSchema.js';
 import User from '../Schemas/userSchema.js';
 import { EmbedBuilder } from 'discord.js';
-import { getTranslation } from './helper.js';
+import { get_lang } from './helper.js';
+import texts from './texts.js';
 import { guild_link_delete_log, guild_ban_log } from './guildLogs.js';
 import { banLogs, linkLogs } from './devLogs.js';
 import { sendBanMessage } from '../utils/sendDmMessages.js';
@@ -44,11 +45,12 @@ export async function delete_message_and_notice(message, userData, channel_name)
 		const guild = message.guild;
 		const user_id = message.author.id;
 		const warnsCount = userData.warns;
+        const lang = await get_lang(message.client, guild.id);
 		const ExampleEmbed = new EmbedBuilder()
-
+        
 			.setColor(0xE53935)
-			.setTitle(await getTranslation(guild.id, 'no_link_title'))
-			.setDescription(await getTranslation(guild.id, 'no_links_description'));
+			.setTitle(texts[lang].no_link_title)
+			.setDescription(texts[lang].no_links_description);
 
 		await message.delete().then(message => {
 			message.channel.send({ content: `<@${message.author.id}>`, embeds: [ExampleEmbed] }).then(message => {

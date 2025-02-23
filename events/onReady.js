@@ -5,9 +5,11 @@ import 'dotenv/config'
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { pathToFileURL } from 'url';
+import { cacheGuildsLanguages } from '../utils/helper.js';
 import Logger from '../utils/logs.js'
 const lg = new Logger('Bot')
 
+const languagesCache = new Map()
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -19,11 +21,15 @@ export default {
     name: Events.ClientReady,
     once: true,
     async execute(client) {
+        const guilds = await client.guilds.fetch();
+
+        client.guildLanguages = new Map();
         client.commands = new Collection();
 
         const foldersPath = path.join(__dirname, '..', 'commands');
+        await cacheGuildsLanguages(client, guilds)
 
-        // Рекурсивна функція для збору всіх команд
+        client.user.setPresence({ activities: [{ name: '/help' }]});
         async function loadCommands(folderPath) {
             const entries = fs.readdirSync(folderPath, { withFileTypes: true });
             for (const entry of entries) {

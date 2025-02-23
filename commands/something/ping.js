@@ -1,42 +1,40 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { EmbedBuilder, version} from 'discord.js';
+import { EmbedBuilder, version } from 'discord.js';
 import moment from 'moment';
-import 'moment-duration-format'
-import { getTranslation } from '../../utils/helper.js';
+import { get_lang } from '../../utils/helper.js';
+import texts from '../../utils/texts.js';
+import Logger from '../../utils/logs.js';
+const lg = new Logger('Bot');
 
-    export const data = new SlashCommandBuilder()
-        .setName('ping')
-		.setDescription('Replies with Pong!')
-	// Визначення execute з параметром client
-	export async function execute(interaction) {
-		// Перевіряємо, чи доступне uptime через переданий client
-		const client = interaction.client;
-		if (!client.uptime) {
+export const data = new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Replies with Pong!');
+
+export async function execute(interaction) {
+    try {
+
+		if (!interaction.client.uptime) {
 			return interaction.reply('На жаль, не вдалося отримати аптайм бота. Спробуйте ще раз.');
 		}
 
-		// Відправляємо повідомлення "Pinging..." і отримуємо його
-		const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
+        const lang = await get_lang(interaction.client, interaction.guild.id);
+        const sent = await interaction.deferReply({ content: 'Pinging...', fetchReply: true});
+        
+        const duration = moment.duration(interaction.client.uptime);
+        const uptime = `${duration.days()}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
 
-		// Форматуємо uptime з переданого client
-		const duration = moment.duration(client.uptime).format(' D [days], H [hrs], m [mins], s [secs]');
-
-		// Створюємо ембед
-		const ExampleEmbed = new EmbedBuilder()
-			.setColor(0x427bff)
-			.setTitle(await getTranslation(interaction.guild.id, 'test'))
-			.addFields(
-				{ name: await getTranslation(interaction.guild.id, 'ping_field1'), value: `${sent.createdTimestamp - interaction.createdTimestamp}ms`, inline: true },
-				{ name: await getTranslation(interaction.guild.id, 'ping_field2'), value: `${duration}`, inline: true },
-				{ name: await getTranslation(interaction.guild.id, 'ping_field3'), value: `\`\`discord.js v${version}\`\``, inline: false },
-			)
-			.setTimestamp();
-
-		// Якщо вже є відповідь, редагуємо її
-		if (interaction.replied) {
-			await interaction.editReply({ content: '', embeds: [ExampleEmbed] });
-		}
-		else {
-			await interaction.reply({ content: '', embeds: [ExampleEmbed] });
-		}
-	}
+        const embed = new EmbedBuilder()
+            .setColor(0x427bff)
+            .setTitle(texts[lang].test)
+            .addFields(
+                { name: texts[lang].ping_field1, value: `${sent.createdTimestamp - interaction.createdTimestamp}ms`, inline: true },
+                { name: texts[lang].ping_field2, value: `${uptime}`, inline: true },
+                { name: texts[lang].ping_field3, value: `\`\`discord.js v${version}\`\``, inline: false }
+            )
+            .setTimestamp();
+                await interaction.editReply({ content: '', embeds: [embed] });
+            
+    } catch (error) {
+        lg.error('Помилка у виконанні команди /ping:', error);
+    }
+}

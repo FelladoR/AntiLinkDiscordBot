@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder } from 'discord.js';
 import Warning from '../../Schemas/userSchema.js';
-import { getTranslation } from '../../utils/helper.js';
+import { get_lang } from '../../utils/helper.js';
+import texts from '../../utils/texts.js';
 import Logger from '../../utils/logs.js';
 const lg = new Logger('Bot');
 
@@ -17,11 +18,11 @@ const lg = new Logger('Bot');
 
 	export async function execute(interaction) {
 		const userId = interaction.options.getString('user_id');
-
+        const lang = await get_lang(interaction.client, interaction.guild.id);
 		// Перевірка, чи є це число
 		if (isNaN(userId)) {
 			return interaction.reply({
-				content: `${await getTranslation(interaction.guild.id, 'warns_NaN')}`,
+				content: texts[lang].warns_NaN,
 				ephemeral: true,
 			});
 		}
@@ -32,7 +33,7 @@ const lg = new Logger('Bot');
 		// Перевірка на валідність числа
 		if (isNaN(userIdNumber)) {
 			return interaction.reply({
-				content: `${await getTranslation(interaction.guild.id, 'warns_NaN')}`,
+				content: texts[lang].warns_NaN,
 				ephemeral: true,
 			});
 		}
@@ -43,10 +44,11 @@ const lg = new Logger('Bot');
 
 			const noWarnsEmbed = new EmbedBuilder()
 				.setColor('#4CAF50')
-				.setTitle(await getTranslation(interaction.guild.id, 'warns_noWarns', { userId }))
+				.setTitle(texts[lang].warns_noWarns.replace('${userId}', userId))
+
 				.addFields({
-					name: await getTranslation(interaction.guild.id, 'warns', { warnings_count: 0 }),
-					value: await getTranslation(interaction.guild.id, 'warns_not_found'),
+					name: texts[lang].warns.replace('${warnings_count}', 0 ),
+					value: texts[lang].warns_not_found,
 				})
 				.setTimestamp();
 
@@ -54,12 +56,17 @@ const lg = new Logger('Bot');
 			if (!userData) {
 				return interaction.reply({ embeds: [noWarnsEmbed] });
 			}
+            const description = texts[lang].warns_description
+                .replace('${userId}', userId)
+                .replace('${warnings_count}', warnings_count);
+
+
 			const warnings_count = userData.warns;
 			const warnings_data = (
 				await Promise.all(
 					userData.reasons.map(async r => {
-						const authorText = await getTranslation(interaction.guild.id, 'warns_author');
-						const reasonText = await getTranslation(interaction.guild.id, 'warns_reason');
+						const authorText = texts[lang].warns_author;
+						const reasonText = texts[lang].warns_reason;
 						return `${authorText} ${r.author_id}, ${reasonText} ${r.reason}`;
 					}),
 				)
@@ -67,9 +74,10 @@ const lg = new Logger('Bot');
 
 			const embed = new EmbedBuilder()
 				.setColor('#e74d3c')
-				.setTitle(await getTranslation(interaction.guild.id, 'warns', { warnings_count }))
-				.setDescription(
-					await getTranslation(interaction.guild.id, 'warns_description', { userId, warnings_count }) +
+				.setTitle(texts[lang].warns.replace('${warnings_count}', warnings_count))
+
+				.setDescription(description
+            +
           '\n' +
           warnings_data,
 				)
@@ -83,7 +91,7 @@ const lg = new Logger('Bot');
 		catch (error) {
 			lg.error('Помилка при отриманні попереджень:', error);
 			return interaction.reply({
-				content: await getTranslation(interaction.guild.id, 'main_error_message'),
+				content: texts[lang].main_error_message,
 				ephemeral: true,
 			});
 		}
