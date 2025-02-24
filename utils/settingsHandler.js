@@ -37,6 +37,7 @@ export async function get_emojis_for_message(support_server) {
 
 export async function settingsHandler(interaction) {
     const lang = await get_lang(interaction.client, interaction.guild.id);
+    lg.debug(lang)
     const support_server = await interaction.client.guilds.cache.get(process.env.SUPPORT_SERVER_ID);
     if (!support_server) {
         lg.warn('Не вдалось знайти сервер підтримки');
@@ -105,6 +106,7 @@ export async function format_whitelist(interaction) {
 
 export async function check_owner_permission(interaction) {
     try{
+        const lang = await get_lang(interaction.client, interaction.guild.id);
         const user = interaction.user
         const guild = interaction.guild
         if(user.id != guild.ownerId) {
